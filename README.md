@@ -41,4 +41,14 @@ The main advantage is that you can share the project.
 Also it orgnize the work.
 
 
+## Nested Routs
+[Video link]()
+## What?
+Devide the routes into seprate files.
+### Why?
+We need to keep `main.py` file as small as possible and don't contain that much of logic.
+
+So, if we have multiple routes we will create a package (directory) that contains all routes (as seprate modules)
+
+
 
