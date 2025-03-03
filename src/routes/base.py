@@ -1,5 +1,5 @@
 '''
-This route is used to check if tha app up up or down
+This route is used to check if tha app up or down
 ''' 
 from fastapi import APIRouter
 import os
