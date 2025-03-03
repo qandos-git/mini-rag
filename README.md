@@ -42,7 +42,6 @@ Also it orgnize the work.
 
 
 ## Nested Routs
-[Video link]()
 ## What?
 Devide the routes into seprate files.
 ### Why?
@@ -52,3 +51,9 @@ So, if we have multiple routes we will create a package (directory) that contain
 
 
 
+### [Framework] boilerplate
+How to strucute your project and orgnize your code?
+
+There are a lot of methods depending on the use case and weather your project is simple or complex.
+
+Find the suitable structure by searching with `[Framework_Name] boilerplate github`
