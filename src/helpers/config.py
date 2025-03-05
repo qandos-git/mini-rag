@@ -1,4 +1,4 @@
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic_settings import BaseSettings
 
 '''
 Settings class inherit BaseSettings, and define the settings (datatypes)
@@ -11,8 +11,7 @@ class Settings(BaseSettings):
 
     APP_NAME: str
     APP_VERSION: str
-    OPENAI_API_KEY: str
-
+    
     class Config:
         env_file = ".env" #predefined with pydantic
 

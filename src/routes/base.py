@@ -2,6 +2,7 @@
 This route is used to check if tha app up or down
 ''' 
 from fastapi import APIRouter
+from helpers.config import get_settings, Settings
 import os
 
 
@@ -18,8 +19,9 @@ base_router = APIRouter(
 
 @base_router.get("/") 
 async def welcome():
-    app_name = os.getenv('APP_NAME') # Retrieves APP_NAME from environment variables
-    app_version = os.getenv('APP_VERSION') # Retrieves APP_VERSION from environment variables.
+    app_settings = get_settings()
+    app_name = app_settings.APP_NAME # Retrieves APP_NAME from environment variables
+    app_version = app_settings.APP_VERSION # Retrieves APP_VERSION from environment variables.
 
 
     return {
