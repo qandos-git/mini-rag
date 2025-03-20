@@ -1,16 +1,15 @@
 '''
 This route is used to check if tha app up or down
-''' 
-from fastapi import APIRouter
-from helpers.config import get_settings, Settings
-import os
+ 
 
 
-''''
 APIRouter is a FastAPI utility that allows you 
 to organize your API by defining separate routers
 for different parts of your application.
 '''
+
+from fastapi import APIRouter, Depends
+from helpers.config import get_settings, Settings
 
 base_router = APIRouter(
     prefix="/api/v1", # This is used to prefix all routes registered under this router.
@@ -18,8 +17,7 @@ base_router = APIRouter(
 )
 
 @base_router.get("/") 
-async def welcome():
-    app_settings = get_settings()
+async def welcome(app_settings:Settings = Depends( get_settings)):
     app_name = app_settings.APP_NAME # Retrieves APP_NAME from environment variables
     app_version = app_settings.APP_VERSION # Retrieves APP_VERSION from environment variables.
 
