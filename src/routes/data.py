@@ -64,7 +64,7 @@ async def upload_data(  request: Request,
 @data_router.post("/process/{project_id}")
 async def process_endpoint(request:Request,project_id:str, process_request:ProcessRequest):
     
-    project_model = ProjectModel(
+    project_model = await ProjectModel.create_instance(
             db_client=request.app.db_client)
     
 
@@ -106,7 +106,7 @@ async def process_endpoint(request:Request,project_id:str, process_request:Proce
     ]
 
 
-    chunk_model  = ChunkModel(
+    chunk_model  = await ChunkModel.create_instance(
             db_client=request.app.db_client)
     
     deleted_chunks = 0
