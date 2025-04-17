@@ -5,11 +5,13 @@ from controllers import DataController, ProjectController, ProcessController
 from .schemes.data import ProcessRequest
 import os
 import aiofiles
-from models import ResponseSignal
+from models import ResponseSignal, AssetTypes
 import logging  
 from models.ProjectModel import ProjectModel
-from models.db_schemes.data_chunk import DataChunk
+from models.db_schemes import DataChunk, Asset
 from models.ChunkModel import ChunkModel
+from models.AssetModel import AssetModel
+
 
 logger = logging.getLogger('uvicorn.error')
 data_controller = DataController()
@@ -27,6 +29,13 @@ async def upload_data(  request: Request,
                         app_settings:Settings = Depends(get_settings)):
 
 
+    project_model = await ProjectModel.create_instance(
+        db_client=request.app.db_client
+    )
+
+    project = await project_model.get_project_or_create_one(
+        project_id=project_id
+    )
 
     is_valid, result_signal  = data_controller.validate_uploaded_file(file=file)
 
@@ -36,8 +45,6 @@ async def upload_data(  request: Request,
                                  "signal" : result_signal
                             })
     
-    project_dir_path = ProjectController().get_project_path(project_id=project_id)
-
     file_path, file_id = data_controller.generate_unique_filepath(
         orig_file_name=file.filename,
         project_id=project_id
@@ -54,23 +61,42 @@ async def upload_data(  request: Request,
                                  "signal" : ResponseSignal.FILE_UPLOAD_FAILED.value
                             })
     
+
+    asset_model = await AssetModel.create_instance(db_client=request.app.db_client)
+
+    asset_resource = Asset(
+        asset_project_id=project.id,
+        asset_type = AssetTypes.FILE.value,
+        asset_name=file_id,
+        asset_size=os.path.getsize(file_path)
+
+    )
+
+    asset_record = await asset_model.create_asset(asset=asset_resource)
+
     return JSONResponse(
         content={
             "signal": ResponseSignal.FILE_UPLOAD_SUCCESS.value,
-            "file_id": file_id
+            "file_id": str(asset_record.id),
                             })
 
 
 @data_router.post("/process/{project_id}")
 async def process_endpoint(request:Request,project_id:str, process_request:ProcessRequest):
     
+
     project_model = await ProjectModel.create_instance(
-            db_client=request.app.db_client)
-    
+        db_client=request.app.db_client
+    )
 
-    project = await project_model.get_project_or_create_one(project_id=project_id)
+    project = await project_model.get_project_or_create_one(
+        project_id=project_id
+    )
 
-    
+    asset_model = await AssetModel.create_instance(
+            db_client=request.app.db_client
+        )
+
     file_id = process_request.file_id
     chunk_size = process_request.chunk_size
     overlap_size = process_request.overlap_size
