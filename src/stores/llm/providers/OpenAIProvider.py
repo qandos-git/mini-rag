@@ -83,7 +83,7 @@ class OpenAIProvider(LLMInterface):
         temperature = temperature if temperature else self.default_generation_temperature
         
         chat_history.append(self.construct_prompt(prompt=prompt, 
-                                            role=OpenAIEnum.USER.value))
+                                            role=OpenAIEnums.USER.value))
 
         response = self.client.chat.completions.create(
             model = self.generation_model_id,
