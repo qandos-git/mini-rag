@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 
 
-
 '''
 This is an abstract class (interface) will defined depends on the llm provider
 Note: when designing such class look at multiple llm providers and combine the required parameters

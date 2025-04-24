@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import List
 
 class VectorDBInterface(ABC):
 
@@ -21,7 +22,7 @@ class VectorDBInterface(ABC):
         pass
 
     @abstractmethod
-    def list_all_collections(self) -> list:
+    def list_all_collections(self) -> List:
         pass
 
     @abstractmethod
