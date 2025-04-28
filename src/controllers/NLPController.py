@@ -1,7 +1,9 @@
 from .BaseController import BaseController
 from models.db_schemes import Project, DataChunk
 from stores.llm.LLMEnums import DocumentTypeEnum
+from stores.llm.templates.template_parser import TemplateParser
 import json
+import os
 from typing import List
 
 class NLPController(BaseController):
@@ -83,6 +85,45 @@ class NLPController(BaseController):
         if not results:
             return False
         
-        return json.loads(
-            json.dumps(results, default=lambda x: x.__dict__))
+        return results
         
+
+    def answer_rag_question(self,query: str, template_parser, limit: int = 10):
+        answer, full_prompt, chat_history = None, None, None
+        template_parser = template_parser
+
+        #step1: retrive semantic serch results for user query
+        document_chunks = self.search_vector_db_collection(
+            text=query,
+            limit=limit
+        )
+
+        if not document_chunks:
+            return answer, full_prompt,chat_history
+        
+        #step2: construct the prompt
+        system_prompt=template_parser.get("rag","system_prompt")
+
+        document_prompt="\n".join([
+            template_parser.get("rag","document_prompt", vars={
+                "doc_num":idx+1,
+                "chunk_text": chunk.text
+            })
+            for idx, chunk in enumerate(document_chunks)
+            ])
+        footer_prompt=template_parser.get("rag","footer_prompt",{"query":query})
+
+        full_prompt = "\n\n".join([document_prompt,footer_prompt])
+
+        chat_history = [self.generation_client.construct_prompt(
+            prompt=system_prompt,
+            role=self.generation_client.enums.SYSTEM.value
+        )]
+        #step3: generate the answer
+        answer = self.generation_client.generate_text(
+            prompt=full_prompt,
+            chat_history=chat_history,
+
+        )
+        #step4: check answer
+        return answer, full_prompt, chat_history
