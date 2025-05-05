@@ -107,7 +107,7 @@ class NLPController(BaseController):
         document_prompt="\n".join([
             template_parser.get("rag","document_prompt", vars={
                 "doc_num":idx+1,
-                "chunk_text": chunk.text
+                "chunk_text": self.generation_client.process_text(chunk.text)
             })
             for idx, chunk in enumerate(document_chunks)
             ])
